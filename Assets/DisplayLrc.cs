@@ -6,17 +6,17 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Text.RegularExpressions;
 //using Boo.Lang;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
 
 public class DisplayLrc : MonoBehaviour
 {
+    public Text MusicName;
     public Text MusicLrc;
     public Text MusicLrc1;
     public Text MusicLrc2;
-    private AudioSource mp3; //音乐
+    private AudioSource audioSource; //音乐
     private Encoding enc; //更改歌词字符编码
     private StreamReader sr; //读取歌词
     public System.Collections.Generic.List<string> strList = new System.Collections.Generic.List<string>();//获取到的歌词
@@ -26,29 +26,40 @@ public class DisplayLrc : MonoBehaviour
     public string path; //歌词路径
 
 
-
     private void Start()
     {
-        mp3 = gameObject.GetComponentInChildren<AudioSource>() as AudioSource;
-        path = Application.dataPath + "/Trc/" + mp3.clip.name + ".lrc"; //获取歌词路径，并同步歌词和歌曲名称
+        audioSource = gameObject.GetComponentInChildren<AudioSource>() as AudioSource;
+        path = Application.dataPath + "/Trc/" + audioSource.clip.name + ".lrc"; //获取歌词路径，并同步歌词和歌曲名称
         enc = GetEncoding(path, Encoding.GetEncoding("UTF-8"));//GB18030 UTF8
         sr = new StreamReader(path, enc);
         OpenFile(); //打开歌词文件
 
-        mp3.Play();
+        audioSource.Play();
+    }
+    public void PlaySong(string songPath)
+    {
+        
     }
 
     //打开歌词文件
     public void OpenFile()
     {
         string oneLine = "";
+        string tittle=null;
         try
         {
             while (!sr.EndOfStream)
             {
                 oneLine = sr.ReadLine() + "\r\n";
-                Replacestr(oneLine);
-                Time(oneLine);
+                if(tittle == null)
+                {
+                    tittle = GetTittle(oneLine);
+                }
+                else
+                {
+                    Replacestr(oneLine);
+                    Time(oneLine);
+                }
             }
             sr.Close();
         }
@@ -57,6 +68,19 @@ public class DisplayLrc : MonoBehaviour
             Debug.Log("exception: "+ e.Message);
             sr.Close();
         }
+        MusicName.text = tittle;
+    }
+
+    //返回是否从一行字符串得到题目
+    public string GetTittle(string oneLine)
+    {
+        string sPattner = "(\\[)(t)(i)(:)(.*)(\\])";
+        Regex reg = new Regex(sPattner);
+        string tmp = reg.Match(oneLine).Value;
+        if (tmp == null)
+            return null;
+        else
+            return tmp.Substring(4,tmp.IndexOf(']')-4);
     }
 
     //去掉除歌词外的其他东西
@@ -88,7 +112,7 @@ public class DisplayLrc : MonoBehaviour
     //匹配时间
     private void SuitedTime()
     {
-        float tmpf = mp3.time;
+        float tmpf = audioSource.time;
         for (int i = x; i < timList.Count-1; i++)
         {
             if (timList[i] <= tmpf)
