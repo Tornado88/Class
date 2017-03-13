@@ -29,14 +29,16 @@ public class DisplayLrc : MonoBehaviour
 
     private void Start()
     {
+
         //Resources中的文件路径 （以后用assetBundle加载）
         PlaySong("Audio/songs/Adele - Someone Like You.mp3");
     }
 
-    bool isDisplaying = false;
+    public enum singState{Stop,Playing,Pause }
+    singState isDisplaying = singState.Stop;
     public bool PlaySong(string songPath)
     {
-        isDisplaying = false;
+        isDisplaying = singState.Stop;
         //提取音频、和LRC文件的路径
         audioPath = songPath;
         lrcPath = Application.dataPath+"/Resources/"+audioPath.Substring(0, audioPath.LastIndexOf('.') + 1) + "lrc";
@@ -77,7 +79,7 @@ public class DisplayLrc : MonoBehaviour
             audioSource.clip = Resources.Load<AudioClip>( audioPath.Remove(audioPath.LastIndexOf('.')) );
         }
         audioSource.Play();
-        isDisplaying = true;
+        isDisplaying = singState.Playing;
         return true;
     }
 
@@ -153,13 +155,13 @@ public class DisplayLrc : MonoBehaviour
     private void SuitedTime()
     {
         float tmpf = audioSource.time;
-        for (int i = x; i < timList.Count-1; i++)
+        for (int i = x; i < timList.Count; i++)
         {
             if (timList[i] <= tmpf)
             {
                 phraseText0.text = i - 1 >= 0 ? strList[i - 1] : "";
                 phraseText1.text = strList[i];
-                phraseText2.text = strList[i + 1];
+                phraseText2.text = i==timList.Count-1?"": strList[i + 1];
                 x = i + 1;
             }
             else
@@ -167,10 +169,49 @@ public class DisplayLrc : MonoBehaviour
         }
     }
 
+    public void Pause()
+    {
+        if (isDisplaying == singState.Playing)
+        {
+            audioSource.Pause();
+            isDisplaying = singState.Pause;
+        }
+    }
+
+    public bool Play()
+    {
+        //如果没有添加audioClip 或者成功解析LRC 则返回false
+        if (audioSource==null || audioSource.clip==null 
+            || timList.Count<=0 || strList.Count<=0 || timList.Count !=strList.Count )
+        {
+            return false;
+        }
+        //开始音乐的播放
+        if (isDisplaying != singState.Playing)
+        {
+            audioSource.Play();
+            isDisplaying = singState.Playing;
+        }
+        return false;
+    }
+
+    public void Stop()
+    {
+        if (isDisplaying != singState.Stop)
+        {
+            audioSource.Stop();
+            isDisplaying = singState.Stop;
+        }
+    }
+
     private void Update()
     {
-        if(isDisplaying)
+        if (isDisplaying == singState.Playing)
+        {
             SuitedTime();//匹配当前时间和歌词
+            if (audioSource.isPlaying == false)
+                isDisplaying = singState.Stop;
+        }
     }
 
     private static Encoding GetEncoding(string file, Encoding defEnc)
