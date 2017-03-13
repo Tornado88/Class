@@ -12,45 +12,85 @@ using UnityEngine.UI;
 
 public class DisplayLrc : MonoBehaviour
 {
-    public Text MusicName;
-    public Text MusicLrc;
-    public Text MusicLrc1;
-    public Text MusicLrc2;
+    public Text tittleText;
+    public Text phraseText0;
+    public Text phraseText1;
+    public Text phraseText2;
+
     private AudioSource audioSource; //音乐
     private Encoding enc; //更改歌词字符编码
-    private StreamReader sr; //读取歌词
+    private StreamReader lrcStream; //读取歌词
     public System.Collections.Generic.List<string> strList = new System.Collections.Generic.List<string>();//获取到的歌词
     public System.Collections.Generic.List<float> timList = new System.Collections.Generic.List<float>();//获取到的时间
 
     
-    public string path; //歌词路径
-
+    public string lrcPath; //歌词路径
+    public string audioPath;//音频路径
 
     private void Start()
     {
-        audioSource = gameObject.GetComponentInChildren<AudioSource>() as AudioSource;
-        path = Application.dataPath + "/Trc/" + audioSource.clip.name + ".lrc"; //获取歌词路径，并同步歌词和歌曲名称
-        enc = GetEncoding(path, Encoding.GetEncoding("UTF-8"));//GB18030 UTF8
-        sr = new StreamReader(path, enc);
-        OpenFile(); //打开歌词文件
-
-        audioSource.Play();
+        //Resources中的文件路径 （以后用assetBundle加载）
+        PlaySong("Audio/songs/Adele - Someone Like You.mp3");
     }
-    public void PlaySong(string songPath)
+
+    bool isDisplaying = false;
+    public bool PlaySong(string songPath)
     {
+        isDisplaying = false;
+        //提取音频、和LRC文件的路径
+        audioPath = songPath;
+        lrcPath = Application.dataPath+"/Resources/"+audioPath.Substring(0, audioPath.LastIndexOf('.') + 1) + "lrc";
         
+        //检验音频和LRC是否存在，及可以正常打开
+        if (!File.Exists(Application.dataPath + "/Resources/" + audioPath) || !File.Exists(lrcPath))
+        {
+            Debug.Log("Error：file: " + audioPath + " or Lrc not exists!!");
+            return false;
+        }
+        try
+        {
+            enc = GetEncoding(lrcPath, Encoding.GetEncoding("UTF-8"));
+            lrcStream = new StreamReader(lrcPath, enc);
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Error: Cant read Lrc File: "+lrcPath+" exception:" + e.Message);
+            return false;
+        }
+
+
+        //解析LRC文件，播放音频
+        ParseLrcFile();
+        if (audioSource!=null)
+        {
+            audioSource.clip = Resources.Load<AudioClip>( audioPath.Remove(audioPath.LastIndexOf('.')) );//"Audio/songs/Adele - Someone Like You"
+        }
+        else
+        {
+            //从自己的component中查找
+            audioSource = GetComponent<AudioSource>();
+            //如果自己没有audioSource 则创建一个
+            if (audioSource == null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+            }
+            audioSource.clip = Resources.Load<AudioClip>( audioPath.Remove(audioPath.LastIndexOf('.')) );
+        }
+        audioSource.Play();
+        isDisplaying = true;
+        return true;
     }
 
     //打开歌词文件
-    public void OpenFile()
+    public void ParseLrcFile()
     {
         string oneLine = "";
         string tittle=null;
         try
         {
-            while (!sr.EndOfStream)
+            while (!lrcStream.EndOfStream)
             {
-                oneLine = sr.ReadLine() + "\r\n";
+                oneLine = lrcStream.ReadLine() + "\r\n";
                 if(tittle == null)
                 {
                     tittle = GetTittle(oneLine);
@@ -61,14 +101,14 @@ public class DisplayLrc : MonoBehaviour
                     Time(oneLine);
                 }
             }
-            sr.Close();
+            lrcStream.Close();
         }
         catch (Exception e)
         {
             Debug.Log("exception: "+ e.Message);
-            sr.Close();
+            lrcStream.Close();
         }
-        MusicName.text = tittle;
+        tittleText.text = tittle;
     }
 
     //返回是否从一行字符串得到题目
@@ -117,9 +157,9 @@ public class DisplayLrc : MonoBehaviour
         {
             if (timList[i] <= tmpf)
             {
-                MusicLrc.text = i - 1 >= 0 ? strList[i - 1] : "";
-                MusicLrc1.text = strList[i];
-                MusicLrc2.text = strList[i + 1];
+                phraseText0.text = i - 1 >= 0 ? strList[i - 1] : "";
+                phraseText1.text = strList[i];
+                phraseText2.text = strList[i + 1];
                 x = i + 1;
             }
             else
@@ -129,7 +169,8 @@ public class DisplayLrc : MonoBehaviour
 
     private void Update()
     {
-        SuitedTime();//匹配当前时间和歌词
+        if(isDisplaying)
+            SuitedTime();//匹配当前时间和歌词
     }
 
     private static Encoding GetEncoding(string file, Encoding defEnc)
