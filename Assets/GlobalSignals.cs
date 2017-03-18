@@ -16,7 +16,6 @@ public class GlobalSignalManager
         injectionBinder.Bind<LogOutSignal>().ToSingleton();
         injectionBinder.Bind<ProcedureSignal>().ToSingleton();
         injectionBinder.Bind<MicControlSignal>().ToSingleton();
-
     }
 }
 
