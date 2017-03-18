@@ -98,7 +98,8 @@ public class Client : IClient
     public void Close()
     {
         receiving = false;
-        client.Close();
+        if(client!=null)
+            client.Close();
         Debug.Log("Socket Close!!");
         client = null;
         stream = null;
@@ -111,7 +112,7 @@ public class Client : IClient
     private bool receiving = false;
     private List<TransferCommand> receiveList = new List<TransferCommand>(); 
     private bool isCombineReceiveMsg = true;
-    public void RecieveBytes()
+    private void RecieveBytes()
     {
         List<TransferCommand> tmpList = new List<TransferCommand>();
         while(receiving)
@@ -142,22 +143,41 @@ public class Client : IClient
         return ConnectingServer();
     }
 
-    public bool processRecvMsg = false;
-    public List<TransferCommand> GetReceivedTransferCommand()
+    private bool processRecvMsg = false;
+    public List<TransferCommand> GetReceivedTransferCommandList()
     {
         processRecvMsg = true;
         List<TransferCommand> returnList = null;
         //如果没有在合并接收信息
         if (isCombineReceiveMsg==false)
         {
-            returnList = receiveList;
-            receiveList = new List<TransferCommand>();
+            if (receiveList.Count > 0)
+            {
+                returnList = receiveList;
+                receiveList = new List<TransferCommand>();
+            }
         }
         //不管在这个update中有没有处理信息 都要释放processRecvMsg以防互锁
         processRecvMsg = false;
         return returnList;
     }
-
+    public TransferCommand GetReceivedTransferCommand()
+    {
+        processRecvMsg = true;
+        TransferCommand returnObj = null;
+        //如果没有在合并接收信息
+        if (isCombineReceiveMsg == false)
+        {
+            if (receiveList.Count > 0)
+            {
+                returnObj = receiveList[0];
+                receiveList.Remove(returnObj);
+            }
+        }
+        //不管在这个update中有没有处理信息 都要释放processRecvMsg以防互锁
+        processRecvMsg = false;
+        return returnObj;
+    }
     //command是null的时候不进行发送。
     public void SendData(TransferCommand command)
     {

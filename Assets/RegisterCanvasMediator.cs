@@ -39,13 +39,13 @@ public class RegisterCanvasMediator : Mediator
         }
         else if(lir.isConnected)//连接成功
         {
-            EditorUtility.DisplayDialog("用户名称不正确", "请您输入正确的用户名，或联系管理员", "OK", "Cancel");
+            EditorUtility.DisplayDialog("用户名称不存在", "请您输入正确的用户名，或联系管理员", "OK", "Cancel");
         }
         else//连接不成功
         {
             Debug.LogError("Error: cant LogedIn ");
             //后面在此弹出一个提示窗口
-            EditorUtility.DisplayDialog("服务器IP不正确", "请您输入正确服务器IP，或联系管理员", "OK", "Cancel");
+            EditorUtility.DisplayDialog("服务器IP不存在", "请您输入正确服务器IP，或联系管理员", "OK", "Cancel");
         }
     }
 

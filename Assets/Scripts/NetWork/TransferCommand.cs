@@ -1,29 +1,62 @@
 ﻿using UnityEngine;
 using System.Collections;
 using ProtoBuf;
+using System.Collections.Generic;
 
 [ProtoContract]
 public class TransferCommand  {
     public TransferCommand() { }
+    public TransferCommand(int userID1, ushort objID1, UserStyle userStyle1, string userName1)
+    {
+        userID = userID1;
+        objID = objID1;
+        userStyle = userStyle1;
+        userName = userName1;
+    }
 
     [ProtoMember(1)]
     public int userID { get; set; }
     [ProtoMember(2)]
-    public ushort ObjID { get; set; }
+    public ushort objID { get; set; }
     [ProtoMember(3)]
-    public ThreeDInfo threeDInfo { get; set; }//可以每10s同步一次
-    [ProtoMember(4)]
-    public MoveStyle moveStyle { get; set; }
-    [ProtoMember(5)]
-    public Interaction interaction { get; set; }
-    [ProtoMember(6)]
     public UserStyle userStyle { get; set; }
+    [ProtoMember(4)]
+    public string userName { get; set; }
+    [ProtoMember(5)]
+    public ThreeDInfo threeDInfo { get; set; }//可以每10s同步一次
+    [ProtoMember(6)]
+    public MoveStyle moveStyle { get; set; }
+    [ProtoMember(7)]
+    public Interaction interaction { get; set; }
+    [ProtoMember(8)]
+    public List<TransferSignal> globalSignalList { get; set; }
 
     public enum UserStyle:byte
-    { Teacher,Student,Technology}
+    { Teacher,Student,Technology,Unkown}
 
     public enum MoveStyle:byte
     { None,GoForward,GoBack,GoLeft,GoRight }
+}
+
+[ProtoContract]
+public class TransferSignal
+{
+    [ProtoMember(1)]
+    Object obj1;
+    [ProtoMember(2)]
+    Object obj2;
+    [ProtoMember(3)]
+    Object obj3;
+    [ProtoMember(4)]
+    Object obj4;
+
+    [ProtoMember(4)]
+    public SignalStyle style { get; set; }
+
+    public enum SignalStyle : byte
+    {
+        LogInSignal, LogedInSignal, LogOutSignal, ProcedureSignal, MicControlSignal
+    }
 }
 
 [ProtoContract]

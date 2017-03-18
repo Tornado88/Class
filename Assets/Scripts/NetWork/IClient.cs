@@ -21,5 +21,4 @@ public interface IClient  {
 
     void SendData(TransferCommand command);
 
-    void RecieveBytes();
 }
