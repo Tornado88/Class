@@ -3,6 +3,8 @@ using System.Collections;
 using strange.extensions.mediation.impl;
 using UnityEngine.UI;
 using strange.extensions.signal.impl;
+using System.Net;
+using UnityEditor;
 
 public class RegisterCanvasView : View
 {
@@ -29,8 +31,17 @@ public class RegisterCanvasView : View
 
     private void OnRegisterButtonClick()
     {
-        LogInInfo li= new LogInInfo(userName.text,severIP.text);
-        logInButtonClickSignal.Dispatch(li);
+        //检测下IP的合法性
+        IPAddress address;
+        if(IPAddress.TryParse(severIP.text,out address))
+        {
+            LogInInfo li = new LogInInfo(userName.text, severIP.text);
+            logInButtonClickSignal.Dispatch(li);
+        }
+        else
+        {
+            EditorUtility.DisplayDialog("服务器IP不正确","请您输入正确的IP地址","OK", "Cancel");
+        }
     }
 
 

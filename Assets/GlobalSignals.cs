@@ -29,13 +29,19 @@ public class GlobalSignalManager
 
 #region UIsingal
 public class LogInSignal : Signal<LogInInfo> {}
-public class LogedInSignal : Signal<bool> { }
+public class LogedInSignal : Signal<LogInResult> { }
 public class LogOutSignal : Signal {}
 public class ProcedureSignal : Signal<ProcedureInfo> { }
 public class MicControlSignal : Signal<MicControlInfo> { }
 
 
 
+public class LogInResult
+{
+    public bool isConnected;
+    public bool isLogedIn;
+    
+}
 
 public class LogInInfo
 {
@@ -70,7 +76,8 @@ public class LogInCommand :Command
     public override void Execute()
     {
         Debug.Log("LogInCommand " + logInInfo.name + ":" + logInInfo.severIpAddress);
-        logedInSignal.Dispatch(true);
+        //运行实际的登录程序 并触发登录成功信号
+        //logedInSignal.Dispatch(false);
     }
 }
 
