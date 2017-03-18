@@ -14,9 +14,11 @@ public class RegisterCanvasView : View
 
     internal void init()
     {
-        Start();
-        userName = transform.FindChild("UserNameInputField").GetComponentInChildren<Text>();
-        severIP = transform.FindChild("SeverIPInputField").GetComponentInChildren<Text>();
+        canv = GetComponent<Canvas>();
+        Show();
+
+        userName = transform.FindChild("UserNameInputField").FindChild("Text").GetComponentInChildren<Text>();
+        severIP = transform.FindChild("SeverIPInputField").FindChild("Text").GetComponentInChildren<Text>();
         registerButton = transform.FindChild("RegisterButton").GetComponentInChildren<Button>();
         if (userName == null || severIP == null || registerButton==null) 
         {
@@ -27,15 +29,10 @@ public class RegisterCanvasView : View
 
     private void OnRegisterButtonClick()
     {
-        LogInInfo li=null;
+        LogInInfo li= new LogInInfo(userName.text,severIP.text);
         logInButtonClickSignal.Dispatch(li);
     }
 
-    void Start()
-    {
-        canv = GetComponent<Canvas>();
-        Show();
-    }
 
     #region 菜单的隐藏显示控制
     bool isHide = false;

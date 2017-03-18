@@ -34,18 +34,14 @@ public class ClassMVCSContext : MVCSContext
         base.mapBindings();
         //View 绑定到 Mediator
         UIView.MediationMapbinding(mediationBinder);
-        
+
+        GlobalSignalManager.GlobalSignalBinder(injectionBinder, commandBinder);
+
+
         //signal 绑定到 Command
         commandBinder.Bind<StartSignal>().To<StartCommand>().Once();
-        commandBinder.Bind<LogInSignal>().To<LogInCommand>();
-        commandBinder.Bind<LogOutSignal>().To<LogOutCommand>();
-        commandBinder.Bind<ProcedureSignal>().To<ProcedureCommand>();
-        commandBinder.Bind<MicControlSignal>().To<MicControlCommand>();
+        
 
-        //在injectionBinder上绑定服务 一般将类绑定到接口上 对于某些公用的信号使用单例模式。 injectionBinder
-        //injectionBinder.Bind<LogInSignal>().ToSingleton();
-        //injectionBinder.Bind<LogOutSignal>().To<LogOutCommand>();
-        //injectionBinder.Bind<ProcedureSignal>().To<ProcedureCommand>();
-        //injectionBinder.Bind<MicControlSignal>().To<MicControlCommand>();
+        //在injectionBinder上绑定服务或model (一般绑定的都是接口) 
     }
 }

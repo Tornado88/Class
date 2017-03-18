@@ -3,15 +3,47 @@ using System.Collections;
 using strange.extensions.signal.impl;
 using strange.extensions.command.impl;
 using strange.extensions.context.api;
+using strange.extensions.injector.api;
+using strange.extensions.command.api;
+
+public class GlobalSignalManager
+{
+    static public void GlobalSignalBinder(ICrossContextInjectionBinder injectionBinder, ICommandBinder commandBinder)
+    {
+        //对于某些公用的信号使用单例模式。 
+        injectionBinder.Bind<LogInSignal>().ToSingleton();
+        injectionBinder.Bind<LogedInSignal>().ToSingleton();
+        injectionBinder.Bind<LogOutSignal>().ToSingleton();
+        injectionBinder.Bind<ProcedureSignal>().ToSingleton();
+        injectionBinder.Bind<MicControlSignal>().ToSingleton();
+
+        //将公用信号都设置成单例模式
+        commandBinder.Bind<LogInSignal>().To<LogInCommand>();
+        commandBinder.Bind<LogedInSignal>().To<LogedInCommand>();
+        commandBinder.Bind<LogOutSignal>().To<LogOutCommand>();
+        commandBinder.Bind<ProcedureSignal>().To<ProcedureCommand>();
+        commandBinder.Bind<MicControlSignal>().To<MicControlCommand>();
+    }
+}
+
 
 #region UIsingal
 public class LogInSignal : Signal<LogInInfo> {}
+public class LogedInSignal : Signal<bool> { }
 public class LogOutSignal : Signal {}
 public class ProcedureSignal : Signal<ProcedureInfo> { }
 public class MicControlSignal : Signal<MicControlInfo> { }
 
+
+
+
 public class LogInInfo
 {
+    public LogInInfo(string name1,string severIP)
+    {
+        name = name1;
+        severIpAddress = severIP;
+    }
     public string name;
     public string severIpAddress;
 }
@@ -32,11 +64,29 @@ public class LogInCommand :Command
 
     [Inject]
     public LogInInfo logInInfo { get; set; }
+    [Inject]//(ContextKeys.CONTEXT)
+    public LogedInSignal logedInSignal { get; set; }
 
     public override void Execute()
     {
+        Debug.Log("LogInCommand " + logInInfo.name + ":" + logInInfo.severIpAddress);
+        logedInSignal.Dispatch(true);
+    }
+}
+
+public class LogedInCommand : Command
+{
+    [Inject(ContextKeys.CONTEXT_VIEW)]
+    public GameObject contextView { get; set; }
+    [Inject]
+    public bool isLogedIn {get; set;}
+
+    public override void Execute()
+    {
+        Debug.Log("LogedInCommand:" + isLogedIn);
 
     }
+
 }
 
 public class LogOutCommand : Command
