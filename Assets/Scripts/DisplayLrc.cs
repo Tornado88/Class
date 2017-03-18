@@ -31,7 +31,7 @@ public class DisplayLrc : MonoBehaviour
     {
 
         //Resources中的文件路径 （以后用assetBundle加载）
-        PlaySong("Audio/songs/Adele - Someone Like You.mp3");
+        //PlaySong("Audio/songs/Adele - Someone Like You.mp3");
     }
 
     public enum singState{Stop,Playing,Pause }
