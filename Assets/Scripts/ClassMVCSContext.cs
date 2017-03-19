@@ -4,6 +4,7 @@ using strange.extensions.context.impl;
 using strange.extensions.context.api;
 using strange.extensions.command.api;
 using strange.extensions.command.impl;
+using CanvasUI;
 
 public class ClassMVCSContext : MVCSContext
 {
