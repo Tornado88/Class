@@ -6,18 +6,38 @@ namespace CanvasUI
 {
     public class ProcedureCanvasMediator : Mediator
     {
+        [Inject]
+        public ProcedureCanvasView view { get; set; }
+        [Inject]
+        public LogedInSignal globalLogedInSignal { get; set; }
 
-        // Use this for initialization
-        void Start()
+        override public void OnRegister()
         {
-
+            view.init();
+            globalLogedInSignal.AddListener(OnLogedIn);
+            
         }
 
-        // Update is called once per frame
-        void Update()
+        private void OnLogedIn(LogInResult lir)
         {
-
+            if(lir.isLogedIn)
+            {
+                if (lir.userStyle == TransferCommand.UserStyle.Teacher)
+                {
+                    view.Show();
+                }
+                else
+                {
+                    view.Hide();
+                }
+            }
         }
+
+        override public void OnRemove()
+        {
+        }
+
+
     }
 }
 

@@ -62,6 +62,10 @@ namespace strange.extensions.mediation.impl
 		virtual public void OnRemove()
 		{
 		}
-	}
+
+        public static void mapBindings()
+        { }
+
+    }
 }
 

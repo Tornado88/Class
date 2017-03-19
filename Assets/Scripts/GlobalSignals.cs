@@ -16,6 +16,9 @@ public class GlobalSignalManager
         injectionBinder.Bind<LogOutSignal>().ToSingleton();
         injectionBinder.Bind<ProcedureSignal>().ToSingleton();
         injectionBinder.Bind<MicControlSignal>().ToSingleton();
+        injectionBinder.Bind<DialogBoxSignal>().ToSingleton();
+        injectionBinder.Bind<DialogBoxResultSignal>().ToSingleton();
+
     }
 }
 
@@ -27,7 +30,22 @@ public class LogOutSignal : Signal {}
 public class ProcedureSignal : Signal<ProcedureInfo> { }
 public class MicControlSignal : Signal<MicControlInfo> { }
 
+public class DialogBoxSignal : Signal<DialogBoxInfo> { }
+public class DialogBoxResultSignal : Signal<DialogBoxResult> { }
 
+public class DialogBoxInfo
+{
+    string tittle;
+    string msg;
+    string button1;
+    string button2;
+    string button3;
+}
+
+public class DialogBoxResult
+{
+    string buttonMsg;
+}
 
 public class LogInResult
 {

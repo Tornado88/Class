@@ -31,7 +31,7 @@ namespace CanvasUI
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (eventData.clickCount == 2)
+            if (eventData.clickCount == 2 && micControl!=null)
             {
                 micControl.Toggle();
             }

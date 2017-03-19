@@ -32,9 +32,8 @@ namespace CanvasUI
 
         private void OnClassRoomOperate(int signalID, string parameter)
         {
-
+            
         }
-
 
 
 

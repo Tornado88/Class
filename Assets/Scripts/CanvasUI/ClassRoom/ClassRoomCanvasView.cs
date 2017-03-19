@@ -7,13 +7,15 @@ namespace CanvasUI
     public class ClassRoomCanvasView : View
     {
 
-        bool isHide = false;
-        Canvas canv;
-        private void Start()
+        public void init()
         {
             canv = GetComponent<Canvas>();
             Hide();
+
         }
+
+        bool isHide = false;
+        Canvas canv;
 
         public void Hide()
         {
@@ -27,11 +29,5 @@ namespace CanvasUI
             isHide = false;
         }
 
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
     }
 }

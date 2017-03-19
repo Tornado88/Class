@@ -90,7 +90,8 @@ public class ClientControl : View
 
     void OnApplicationQuit()
     {
-        client.Close();
+        if(client!=null)
+            client.Close();
     }
 
 
