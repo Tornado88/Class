@@ -9,7 +9,7 @@ namespace CanvasUI
 
         bool isHide = false;
         Canvas canv;
-        private void Start()
+        protected override void Start()
         {
             canv = GetComponent<Canvas>();
             Hide();

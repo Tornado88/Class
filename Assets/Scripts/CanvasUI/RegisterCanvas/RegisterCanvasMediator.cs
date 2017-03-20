@@ -14,6 +14,8 @@ namespace CanvasUI
         public LogInSignal globalLogInSignal { get; set; }
         [Inject]
         public LogedInSignal globalLogedInSignal { get; set; }
+        [Inject]
+        public DialogBoxSignal dialogBoxSignal { get; set; }
 
 
         override public void OnRegister()
@@ -40,15 +42,25 @@ namespace CanvasUI
             }
             else if (lir.isConnected)//连接成功
             {
-                //EditorUtility.DisplayDialog("用户名称不存在", "请您输入正确的用户名，或联系管理员", "OK", "Cancel");
-                
+                DialogBoxMsg msg = new DialogBoxMsg();
+                msg.tittle = "用户名称不存在";
+                msg.msg = "请您输入正确的用户名，或联系管理员";
+                dialogBoxSignal.Dispatch(msg);
             }
             else//连接不成功 
             {
-                Debug.LogError("Error: cant LogedIn ");
-                //后面在此弹出一个提示窗口
-                //EditorUtility.DisplayDialog("服务器IP不存在", "请您输入正确服务器IP，或联系管理员", "OK", "Cancel");
+                DialogBoxMsg msg = new DialogBoxMsg();
+                msg.tittle = "服务器IP不存在";
+                msg.msg = "请您输入正确服务器IP，或联系管理员";
+                msg.resultSignal = new DialogBoxResultSignal();
+                msg.resultSignal.AddListener(OnDialogBoxTest);
+                dialogBoxSignal.Dispatch(msg);
             }
+        }
+
+        private void OnDialogBoxTest(DialogBoxResult lbr)
+        {
+            Debug.Log("Info: DialogBox result:" + lbr.operateStyle.ToString());
         }
 
         override public void OnRemove()

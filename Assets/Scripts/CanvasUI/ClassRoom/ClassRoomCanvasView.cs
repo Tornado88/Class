@@ -14,9 +14,8 @@ namespace CanvasUI
 
         }
 
-        bool isHide = false;
+        public bool isHide = false;
         Canvas canv;
-
         public void Hide()
         {
             canv.enabled = false;

@@ -96,7 +96,7 @@ public class ClientControl : View
 
 
 
-    private void Start()
+    protected override void Start()
     {
         globalLogInSignal.AddListener(OnFoundClient);
     }

@@ -9,6 +9,9 @@ namespace CanvasUI
 {
     public class RegisterCanvasView : View
     {
+        [Inject]
+        public DialogBoxSignal dialogBoxSignal { get; set; }
+
         public Signal<LogInInfo> logInButtonClickSignal = new Signal<LogInInfo>();
 
         Text userName;
@@ -41,13 +44,17 @@ namespace CanvasUI
             }
             else
             {
-                //EditorUtility.DisplayDialog("服务器IP不正确", "请您输入正确的IP地址", "OK", "Cancel");
+                DialogBoxMsg msg = new DialogBoxMsg();
+                msg.tittle = "服务器IP不正确";
+                msg.msg = "请您输入正确的IP地址";
+                msg.resultSignal = null;
+                dialogBoxSignal.Dispatch(msg);
             }
         }
 
 
         #region 菜单的隐藏显示控制
-        bool isHide = false;
+        public bool isHide = false;  
         Canvas canv;
         public void Hide()
         {

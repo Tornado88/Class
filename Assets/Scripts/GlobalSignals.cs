@@ -17,8 +17,7 @@ public class GlobalSignalManager
         injectionBinder.Bind<ProcedureSignal>().ToSingleton();
         injectionBinder.Bind<MicControlSignal>().ToSingleton();
         injectionBinder.Bind<DialogBoxSignal>().ToSingleton();
-        injectionBinder.Bind<DialogBoxResultSignal>().ToSingleton();
-
+        //injectionBinder.Bind<DialogBoxResultSignal>().ToSingleton(); 返回的信号是有差异化的
     }
 }
 
@@ -30,21 +29,29 @@ public class LogOutSignal : Signal {}
 public class ProcedureSignal : Signal<ProcedureInfo> { }
 public class MicControlSignal : Signal<MicControlInfo> { }
 
-public class DialogBoxSignal : Signal<DialogBoxInfo> { }
+public class DialogBoxSignal : Signal<DialogBoxMsg> { }
 public class DialogBoxResultSignal : Signal<DialogBoxResult> { }
 
-public class DialogBoxInfo
+public class DialogBoxMsg
 {
-    string tittle;
-    string msg;
-    string button1;
-    string button2;
-    string button3;
+    public string tittle;
+    public string msg;
+    public DialogBoxResultSignal resultSignal;
 }
 
 public class DialogBoxResult
 {
-    string buttonMsg;
+    public DialogBoxResult(OperateStyle operateStyle1)
+    {
+        operateStyle = operateStyle1;
+    }
+    public OperateStyle operateStyle;
+    public enum OperateStyle:byte
+    {
+        Yes,
+        No,
+        Cancel
+    }
 }
 
 public class LogInResult
